@@ -19,7 +19,7 @@ library(qqdeg)
 
 ###### 第一个是实验组，第二个是对照组，fc是foldchang，默认是1.5倍，result里存有很多对象，GO和KEGG默认p.adj < 0.05。
 
-##### 想用其他物种，或者改其他参数可以改下代码，非常方便
+###### 想用其他物种，或者改其他参数可以改下代码，非常方便
 
 result <- qqdeg("test.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
 
