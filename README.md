@@ -1,5 +1,5 @@
 # qqdeg！ 
-###### 在学习qPCR实验时写的，可以一键获得相对表达量
+###### 差异分析重复做太麻烦，可以一键获得DEG和enrich
 ##### 安装
 
 install.packages("devtools")
@@ -15,7 +15,10 @@ devtools::install_github('liuyuchenlab/qqdeg')
 
 library(qqdeg)  
 
-###### 
+###### 示例代码
+
+result <- qqdeg("rlim.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
+
 
 
 
