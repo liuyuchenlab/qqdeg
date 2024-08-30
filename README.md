@@ -17,7 +17,7 @@ library(qqdeg)
 
 ###### 示例代码，自己用的，只能用xlsx文件，处理小鼠数据，可处理gene数据和TE数据，第一个是实验组，第二个是对照组，fc是foldchang，默认是1.5倍，result里存有很多对象，GO和KEGG默认p.adj < 0.05。
 
-result <- qqdeg("rlim.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
+result <- qqdeg("test.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
 
 ###### 输出一张火山图
 ![image](https://github.com/user-attachments/assets/8443dde9-1d17-47a0-bcff-d22ea42c6b49)
