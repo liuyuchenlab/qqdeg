@@ -1,0 +1,27 @@
+Package: qqdeg
+Type: Package
+Title: Quickly query DEGs and enrich results
+Version: 0.1.0
+Author: LIU Yu-chen
+Maintainer: The package maintainer <gagalab@foxmail.com>
+Description: easily get deg.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    BiocManager
+Imports: 
+    clusterProfiler,
+    DESeq2,
+    DOSE,
+    ggplot2,
+    ggpubr,
+    ggrepel,
+    ggthemes,
+    gmodels,
+    matrixStats,
+    openxlsx,
+    org.Mm.eg.db,
+    pathview,
+    topGO
+RoxygenNote: 7.3.2
