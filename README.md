@@ -29,7 +29,8 @@ result <- qqdeg("rlim.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
 ![image](https://github.com/user-attachments/assets/246a62b7-0951-4246-88a9-e8083a37bc60)
 
 ###### 还会新建文件夹存放文件
-![image](https://github.com/user-attachments/assets/4e87eed0-7c75-4008-92e2-0123e2cafec6)
+![image](https://github.com/user-attachments/assets/fa96f77d-620d-4fe6-8693-72fb5d5bb3ca)
+
 
 
 
