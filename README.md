@@ -15,16 +15,24 @@ devtools::install_github('liuyuchenlab/qqdeg')
 
 library(qqdeg)  
 
+###### 数据格式
+
+![image](https://github.com/user-attachments/assets/7f48fb48-c7e4-4c7d-94b6-edd3760a83aa)
+
 ###### 示例代码，自己用的，只能用xlsx文件，处理小鼠数据，可处理gene数据和TE数据。
 
 ###### 第一个是实验组，第二个是对照组，fc是foldchange，默认是1.5倍，result里存有很多对象，GO和KEGG默认p.adj < 0.05。
 
-###### 想用其他物种，或者改其他参数可以改下代码，非常方便
+###### 想用其他物种，或者改其他参数可以改下代码，非常方便 
 
 result <- qqdeg("test.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
 
 ###### 输出一张火山图
 ![image](https://github.com/user-attachments/assets/8443dde9-1d17-47a0-bcff-d22ea42c6b49)
+
+###### 不知何种原因，不同电脑对富集分析处理时的列选择出现了问题，不过不妨碍上一步的工作
+
+###### 可使用输出的DEG文件自行进行富集分析，如果没出问题那就最好了
 
 ###### GO BP 富集
 ![image](https://github.com/user-attachments/assets/612d569c-f38d-4bd3-902d-a6b0ed72022a)
