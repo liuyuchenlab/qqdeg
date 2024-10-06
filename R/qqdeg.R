@@ -213,7 +213,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
 
   # 将所有结果保存到列表
   result <- list(
-    volcano_plot = file.path(output_dir, paste0("Volcano_plot_", object_type, "_", group1, "_vs_", group2, ".png")),
+    volcano_plot = volcano_plot,
     go_plot = if (exists("go_plot")) go_plot else NULL,
     kegg_plot = if (exists("kk_plot")) kegg_plot else NULL,
     diff_genes = file.path(output_dir, paste0("diff_", object_type, "_", group1, "_vs_", group2, ".csv")),
