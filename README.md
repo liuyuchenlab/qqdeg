@@ -2,18 +2,18 @@
 ###### 一键获得DEG和enrich!
 ##### 安装
 
-install.packages("devtools")
+  install.packages("devtools")
 
-library(devtools)  
+  library(devtools)  
 
 ###### 如果连接失败：  
 ###### 1.尝试修复Hosts配置  
 ###### 2.尝试Win+R，输入inetcpl.cpl 直接打开Internet选项。打开后，在高级中勾选使用TLS 1.0、使用TLS 1.1、使用TLS 1.2、使用TLS 1.3。
 
-devtools::install_github('liuyuchenlab/qqdeg')  
+  devtools::install_github('liuyuchenlab/qqdeg')  
 
 
-library(qqdeg)  
+  library(qqdeg)  
 
 ###### 数据格式
 ###### 可以直接承接TECOUNTS的counts矩阵，选择gene或者te即可，其他软件的gene定量选gene即可
@@ -27,7 +27,7 @@ library(qqdeg)
 ###### 第一个是实验组，第二个是对照组，fc是foldchange，默认是1.5倍，result里存有很多对象，GO和KEGG默认p.adj < 0.05，删除重复项。
 
 
-result <- qqdeg("rlim.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
+  result <- qqdeg("rlim.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
 
 ###### result中存有大量对象，可自行保存或者修改
 
