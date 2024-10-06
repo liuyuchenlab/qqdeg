@@ -22,11 +22,10 @@ library(qqdeg)
 
 
 
-###### 示例代码，自己用的，只能用xlsx文件，处理小鼠数据，可处理gene数据和TE数据。
+###### 示例代码，自己用的，只能用xlsx文件，处理小鼠数据，想用其他物种，或者改其他参数可以改下代码，非常方便 。
 
 ###### 第一个是实验组，第二个是对照组，fc是foldchange，默认是1.5倍，result里存有很多对象，GO和KEGG默认p.adj < 0.05，删除重复项。
 
-###### 想用其他物种，或者改其他参数可以改下代码，非常方便 
 
 result <- qqdeg("test.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
 
