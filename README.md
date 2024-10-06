@@ -27,7 +27,7 @@ library(qqdeg)
 ###### 第一个是实验组，第二个是对照组，fc是foldchange，默认是1.5倍，result里存有很多对象，GO和KEGG默认p.adj < 0.05，删除重复项。
 
 
-result <- qqdeg("test.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
+result <- qqdeg("rlim.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
 
 ###### result中存有大量对象，可自行保存或者修改
 
