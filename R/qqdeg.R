@@ -102,14 +102,14 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
     geom_hline(yintercept = 1.30, linetype = "dashed") +
     geom_vline(xintercept = c(-log2(fc_threshold), log2(fc_threshold)), linetype = "dashed") +
     expand_limits(y = 0) +
-    xlab(paste("log2FoldChange (", group1, "/", group2, ")", sep = "")) +
-    ylab("-log10(Adjusted P-value)")
+    xlab(bquote(log[2]*FoldChange * "(" ~ .(group1) ~ "/" ~ .(group2) ~ ")")) +
+    ylab(expression(-log[10](Adjusted ~ P-value)))
 
   # 显示火山图
   print(volcano_plot)
 
   # 保存火山图
-  ggsave(filename = file.path(output_dir, paste0("Volcano_plot_", object_type, "_", group1, "_vs_", group2, ".png")), plot = volcano_plot)
+  ggsave(filename = file.path(output_dir, paste0("Volcano_plot_", object_type, "_", group1, "_vs_", group2, ".png")), plot = volcano_plot, limitsize = FALSE)
 
   # GO富集分析
   go <- NULL
@@ -136,7 +136,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
       go.down <- go.down[order(go.down$p.adjust), ]
       go.down$new <- -log10(go.down$p.adjust)
       go.down$value <- -(go.down$new)
-      go.down <- go.down[,-10]
+      go.down <- go.down[ , -which(colnames(go.down) %in% "new")]
 
       # 合并显著的上下调
       go.up <- head(go.up, 10)
@@ -146,21 +146,26 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
 
       ## 调整因子水平
       go <- go[order(go$value),]
+      # 计算每个 Description 的频率
+      desc_counts <- table(go$Description)
+      # 筛选出只出现一次的 Description
+      unique_desc <- names(desc_counts[desc_counts == 1])
+      # 根据唯一的 Description 过滤 go 数据框
+      go <- go[go$Description %in% unique_desc, ]
       name <- go$Description
-      name <- name[!duplicated(name)]
       go$Description <- factor(go$Description, levels = name)
 
       # 绘制GO富集图
       go_plot <- ggplot(go, aes(x = value, y = Description)) +
-        xlab('Enrich factor') +
+        xlab('Enrich value') +
         ylab("") +
         geom_bar(stat = "identity", aes(fill = ifelse(value < 0, "down", "up"))) +
         scale_fill_manual(name = "value", values = c("down" = "dodgerblue3", "up" = "firebrick3")) +
         theme_few() +
-        ggtitle(paste(group1, "vs", group2, "GO Enrichment Analysis"))
+        ggtitle(paste(group1, "vs", group2, "GO BP Enrichment Analysis"))
 
       print(go_plot)
-      ggsave(filename = file.path(output_dir, paste0("GO_Enrichment_", object_type, "_", group1, "_vs_", group2, ".png")), plot = go_plot)
+      ggsave(filename = file.path(output_dir, paste0("GO_BP_Enrichment_", object_type, "_", group1, "_vs_", group2, ".png")), plot = go_plot, limitsize = FALSE)
 
       #######kegg
       #上调kegg
@@ -171,11 +176,9 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
       upkegg <- up.kk@result
       up.kegg <- upkegg[order(upkegg$p.adjust),]
       up.kegg$value <- -log10(up.kegg$p.adjust)
-      up.kegg <- up.kegg[,-10]
       downkegg <- down.kk@result
       down.kegg <- downkegg[order(downkegg$p.adjust),]
       down.kegg$value <- log10(downkegg$p.adjust)
-      down.kegg <- down.kegg[,-10]
       ####合并显著的上下调
       kegg.up <-  head(up.kegg,10)
       kegg.down <- head(down.kegg,10)
@@ -186,11 +189,17 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
       ####BAR
       ## 调整因子水平
       kegg <- kegg[order(kegg$value),]
+      # 计算每个 Description 的频率
+      desc_counts <- table(kegg$Description)
+      # 筛选出只出现一次的 Description
+      unique_desc <- names(desc_counts[desc_counts == 1])
+      # 根据唯一的 Description 过滤 kegg 数据框
+      kegg <- kegg[kegg$Description %in% unique_desc, ]
       name <- kegg$Description
-      name <- name[!duplicated(name)]
-      kegg$Description <- factor(kegg$Description,levels= name)
+      kegg$Description <- factor(kegg$Description, levels = name)
+      #绘制富集图
       kegg_plot <- ggplot(kegg, aes(x = value, y = Description),col = col) +
-        xlab('Enrich factor') +
+        xlab('Enrich value') +
         ylab("") +
         geom_bar(stat = "identity", aes(fill = ifelse(value < 0, "down", "up"))) +
         scale_fill_manual(name = "value", values = c("down" ="dodgerblue3", "up" = "firebrick3")) +
@@ -198,15 +207,15 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
         ggtitle(paste(group1, "vs", group2, "KEGG Enrichment Analysis"))
       print(kegg_plot)
 
-      ggsave(filename = file.path(output_dir, paste0("KEGG_Enrichment_", object_type, "_", group1, "_vs_", group2, ".png")), plot = kegg_plot)
+      ggsave(filename = file.path(output_dir, paste0("KEGG_Enrichment_", object_type, "_", group1, "_vs_", group2, ".png")), plot = kegg_plot, limitsize = FALSE)
     }
   }
 
   # 将所有结果保存到列表
   result <- list(
     volcano_plot = file.path(output_dir, paste0("Volcano_plot_", object_type, "_", group1, "_vs_", group2, ".png")),
-    go_plot = if (exists("go_plot")) file.path(output_dir, paste0("GO_Enrichment_", object_type, "_", group1, "_vs_", group2, ".png")) else NULL,
-    kegg_plot = if (exists("kk_plot")) file.path(output_dir, paste0("KEGG_Enrichment_", object_type, "_", group1, "_vs_", group2, ".png")) else NULL,
+    go_plot = if (exists("go_plot")) go_plot else NULL,
+    kegg_plot = if (exists("kk_plot")) kegg_plot else NULL,
     diff_genes = file.path(output_dir, paste0("diff_", object_type, "_", group1, "_vs_", group2, ".csv")),
     up_genes = file.path(output_dir, paste0(group1, "_vs_", group2, "_up-", object_type, ".csv")),
     down_genes = file.path(output_dir, paste0(group1, "_vs_", group2, "_down-", object_type, ".csv")),
