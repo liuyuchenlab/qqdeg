@@ -1,5 +1,5 @@
 # qqdeg！ 
-###### 差异分析重复做太麻烦，可以一键获得DEG和enrich
+###### 一键获得DEG和enrich!
 ##### 安装
 
 install.packages("devtools")
