@@ -16,10 +16,11 @@ devtools::install_github('liuyuchenlab/qqdeg')
 library(qqdeg)  
 
 ###### 数据格式
+###### 可以直接承接TECOUNTS的counts矩阵，选择gene或者te即可，其他软件的gene定量选gene即可
 
 ![image](https://github.com/user-attachments/assets/7f48fb48-c7e4-4c7d-94b6-edd3760a83aa)
 
-可以直接承接TECOUNTS的counts矩阵，选择gene或者te即可，其他软件的gene定量选gene即可
+
 
 ###### 示例代码，自己用的，只能用xlsx文件，处理小鼠数据，可处理gene数据和TE数据。
 
