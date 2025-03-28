@@ -118,31 +118,35 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
     up <- read.csv(file.path(output_dir, paste0(group1, "_vs_", group2, "_up-", object_type, ".csv")))
     down <- read.csv(file.path(output_dir, paste0(group1, "_vs_", group2, "_down-", object_type, ".csv")))
 
-    up_genes <- bitr(up$X, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Mm.eg.db, drop = FALSE)
-    down_genes <- bitr(down$X, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Mm.eg.db, drop = FALSE)
+    up_genes <- bitr(up$X, fromType = "SYMBOL",
+                     toType = "ENTREZID", OrgDb = org.Mm.eg.db, drop = FALSE)
+    down_genes <- bitr(down$X, fromType = "SYMBOL",
+                       toType = "ENTREZID", OrgDb = org.Mm.eg.db, drop = FALSE)
 
     if (nrow(up_genes) == 0 | nrow(down_genes) == 0) {
       cat("Warning: No genes mapped to ENTREZ IDs. Skipping GO and KEGG analysis.\n")
     } else {
-      up.go_all <- enrichGO(gene = up_genes$ENTREZID, OrgDb = org.Mm.eg.db, keyType = 'ENTREZID', ont = "BP", pAdjustMethod = "BH", pvalueCutoff = 1, qvalueCutoff = 1)
-      down.go_all <- enrichGO(gene = down_genes$ENTREZID, OrgDb = org.Mm.eg.db, keyType = 'ENTREZID', ont = "BP", pAdjustMethod = "BH", pvalueCutoff = 1, qvalueCutoff = 1)
+      up.go_all <- enrichGO(gene = up_genes$ENTREZID,
+                            OrgDb = org.Mm.eg.db,
+                            keyType = 'ENTREZID', ont = "BP",
+                            pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.05)
+      down.go_all <- enrichGO(gene = down_genes$ENTREZID,
+                              OrgDb = org.Mm.eg.db,
+                              keyType = 'ENTREZID', ont = "BP", pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.05)
 
       # 处理GO结果
       go.up <- up.go_all@result
       go.up <- go.up[order(go.up$p.adjust), ]
       go.up$value <- -log10(go.up$p.adjust)
-
       go.down <- down.go_all@result
       go.down <- go.down[order(go.down$p.adjust), ]
       go.down$new <- -log10(go.down$p.adjust)
       go.down$value <- -(go.down$new)
       go.down <- go.down[ , -which(colnames(go.down) %in% "new")]
-
       # 合并显著的上下调
-      go.up <- head(go.up, 10)
-      go.down <- head(go.down, 10)
+      go.up <- head(go.up, 5)
+      go.down <- head(go.down, 5)
       go <- rbind(go.up, go.down)
-      go <- go[go$value > 1.30103 | go$value < -1.30103, ]
 
       ## 调整因子水平
       go <- go[order(go$value),]
@@ -169,21 +173,23 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
 
       #######kegg
       #上调kegg
-      up.kk <- enrichKEGG(gene = up_genes$ENTREZID,organism = 'mmu',  pvalueCutoff = 1)
+      up.kk <- enrichKEGG(gene = up_genes$ENTREZID,organism = 'mmu',  pvalueCutoff = 0.05)
       #下调kegg
-      down.kk <- enrichKEGG(gene = down_genes$ENTREZID,organism = 'mmu',  pvalueCutoff = 1)
+      down.kk <- enrichKEGG(gene = down_genes$ENTREZID,organism = 'mmu',  pvalueCutoff = 0.05)
       #画图
       upkegg <- up.kk@result
       up.kegg <- upkegg[order(upkegg$p.adjust),]
       up.kegg$value <- -log10(up.kegg$p.adjust)
+
       downkegg <- down.kk@result
       down.kegg <- downkegg[order(downkegg$p.adjust),]
-      down.kegg$value <- log10(downkegg$p.adjust)
+      down.kegg$value <- log10(down.kegg$p.adjust)
+
       ####合并显著的上下调
-      kegg.up <-  head(up.kegg,10)
-      kegg.down <- head(down.kegg,10)
+      kegg.up <-  head(up.kegg,5)
+      kegg.down <- head(down.kegg,5)
       kegg <- rbind(kegg.up,kegg.down)
-      kegg <- kegg[kegg$value > 1.30103 | kegg$value < -1.30103, ]
+
 
       kegg$Description <- gsub("-.*", "", kegg$Description)
       ####BAR
@@ -224,7 +230,11 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
     res = res,
     resdata = resdata,
     go = if (exists("go")) go else NULL,
-    kegg = if (exists("kegg")) kegg else NULL
+    go.up = if (exists("go.up")) go.up else NULL,
+    go.down = if (exists("go.down")) go.down else NULL,
+    kegg = if (exists("kegg")) kegg else NULL,
+    kegg.up = if (exists("kegg.up")) kegg.up else NULL,
+    kegg.down = if (exists("kegg.down")) kegg.down else NULL
   )
   # 打印完毕消息
   # 创建虚线
