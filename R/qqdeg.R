@@ -47,7 +47,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
     stop("Invalid object_type. Must be 'gene' or 'te'.")
   }
 
-  row.names(obj_data) <- obj_data$Gene
+  row.names(obj_data) <- obj_data$gene_id
   obj_data <- obj_data[, -1]
 
   # 准备分组信息
