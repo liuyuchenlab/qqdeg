@@ -21,7 +21,7 @@
 ```
 ###### 数据格式
 ###### 可以直接承接TECOUNTS的counts矩阵，选择gene或者te即可
-###### 其他软件的gene定量选gene即可，最重要的是数据格式，基因的列名为gene_id,样本名为A-1,A-2，B-1,B-2
+###### 其他软件的gene定量选gene即可，最重要的是数据格式，基因的列名为gene_id，样本名为A-1，A-2，B-1，B-2等等
 
 ![image](https://github.com/user-attachments/assets/4499d333-b5a1-4bf3-8051-7435f5d0cf97)
 
