@@ -36,7 +36,7 @@
 
 
 ```
-  result <- qqdeg("rlim.xlsx","gene","female-ko","female-wt",fc_threshold = 1.5)
+  result <- qqdeg("rlim.xlsx","gene","male-ko","male-wt",fc_threshold = 1.5)
 ```
 
 ###### result中存有大量对象，可自行保存或者修改
