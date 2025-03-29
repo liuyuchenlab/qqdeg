@@ -21,7 +21,8 @@
 ```
 ###### 数据格式
 ###### 可以直接承接TECOUNTS的counts矩阵，选择gene或者te即可
-###### 其他软件的gene定量选gene即可，最重要的是数据格式，基因的列名为gene_id，样本名为A-1，A-2，B-1，B-2等等
+###### 其他软件的gene定量选gene即可
+###### 最重要的是数据格式，基因的列名为gene_id，样本名为A-1，A-2，B-1，B-2等等
 
 ![image](https://github.com/user-attachments/assets/4499d333-b5a1-4bf3-8051-7435f5d0cf97)
 
@@ -47,11 +48,11 @@
 
 ###### 可使用输出的DEG文件自行进行富集分析，如果没出问题那就最好了
 
-###### GO BP 富集
+##### GO BP 富集
 ![image](https://github.com/user-attachments/assets/a661df4f-8841-4aba-b783-b73e72909eb0)
 
 
-###### KEGG 富集
+##### KEGG 富集
 ![image](https://github.com/user-attachments/assets/8e1e5d48-f04b-4e57-99ba-59bf48f0e085)
 
 
