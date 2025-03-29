@@ -52,9 +52,13 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
 
   # 准备分组信息
   coldata <- data.frame(condition = gsub("-\\d+$", "", colnames(obj_data)), row.names = colnames(obj_data))
-
+  #提取分组矩阵
+  target_samples <- rownames(coldata)[coldata$condition %in% c(group1, group2)]
+  sub_counts <- obj_data[, target_samples]  # 提取对应样本的表达矩阵
+  # 准备新的分组信息
+  coldata <- data.frame(condition = gsub("-\\d+$", "", colnames(sub_counts)), row.names = colnames(sub_counts))
   # 创建DESeq2数据集
-  dds <- DESeqDataSetFromMatrix(countData = obj_data, colData = coldata, design = ~condition)
+  dds <- DESeqDataSetFromMatrix(countData = sub_counts, colData = coldata, design = ~condition)
   keep <- rowSums(counts(dds) >= 10) >= 2
   dds <- dds[keep, ]
 
@@ -82,7 +86,9 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
   resdata$GROUP[(resdata$padj < 0.05) & (resdata$log2FoldChange > log2(fc_threshold))] <- "up-regulated"
   resdata$GROUP[(resdata$padj < 0.05) & (resdata$log2FoldChange < -log2(fc_threshold))] <- "down-regulated"
   resdata$Lable <- ""
-
+  # >>> 新增统计代码 <<<
+  up_count <- sum(resdata$GROUP == "up-regulated")
+  down_count <- sum(resdata$GROUP == "down-regulated")
   # 去除缺失值
   resdata <- na.omit(resdata)
   resdata <- resdata[order(resdata$padj), ]
@@ -97,7 +103,12 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
   volcano_plot <- ggplot(resdata, aes(x = log2FoldChange, y = logP)) +
     geom_point(aes(color = GROUP), size = 1) +
     geom_text_repel(aes(label = Lable), size = 3, box.padding = 0.5, max.overlaps = Inf) +
-    scale_color_manual(values = group_colors) +
+    scale_color_manual(values = group_colors,
+                       labels = c(
+                         "up-regulated" = paste0("Up regulated (", up_count, ")"),
+                         "down-regulated" = paste0("Down regulated (", down_count, ")"),
+                         "not significant" = "Not significant"
+                       )) +
     theme_classic() +
     geom_hline(yintercept = 1.30, linetype = "dashed") +
     geom_vline(xintercept = c(-log2(fc_threshold), log2(fc_threshold)), linetype = "dashed") +
@@ -109,7 +120,11 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
   print(volcano_plot)
 
   # 保存火山图
-  ggsave(filename = file.path(output_dir, paste0("Volcano_plot_", object_type, "_", group1, "_vs_", group2, ".png")), plot = volcano_plot, limitsize = FALSE)
+  ggsave(filename = file.path(output_dir, paste0("Volcano_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
+         plot = volcano_plot, width = 8,          # 增大画布宽度
+         height = 6,
+         dpi = 600,          # 提高分辨率
+         device = cairo_pdf)
 
   # GO富集分析
   go <- NULL
@@ -169,7 +184,10 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
         ggtitle(paste(group1, "vs", group2, "GO BP Enrichment Analysis"))
 
       print(go_plot)
-      ggsave(filename = file.path(output_dir, paste0("GO_BP_Enrichment_", object_type, "_", group1, "_vs_", group2, ".png")), plot = go_plot, limitsize = FALSE)
+      ggsave(filename = file.path(output_dir, paste0("GO_BP_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = go_plot,width = 8,          # 增大画布宽度
+             height = 6,
+             dpi = 600,          # 提高分辨率
+             device = cairo_pdf)
 
       #######kegg
       #上调kegg
@@ -213,7 +231,10 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
         ggtitle(paste(group1, "vs", group2, "KEGG Enrichment Analysis"))
       print(kegg_plot)
 
-      ggsave(filename = file.path(output_dir, paste0("KEGG_Enrichment_", object_type, "_", group1, "_vs_", group2, ".png")), plot = kegg_plot, limitsize = FALSE)
+      ggsave(filename = file.path(output_dir, paste0("KEGG_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = kegg_plot,width = 8,          # 增大画布宽度
+             height = 6,
+             dpi = 600,          # 提高分辨率
+             device = cairo_pdf)
     }
   }
 
