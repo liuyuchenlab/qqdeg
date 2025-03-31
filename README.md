@@ -56,8 +56,13 @@
 ![image](https://github.com/user-attachments/assets/8e1e5d48-f04b-4e57-99ba-59bf48f0e085)
 
 
+##### GSEA富集分析
+![image](https://github.com/user-attachments/assets/0f8659c8-a025-4f58-b003-f4ba096fb48c)
+
+
 ###### 运行函数会自动新建文件夹存放文件
-![image](https://github.com/user-attachments/assets/e2172af2-ccfc-46e9-ae26-5e9e72227220)
+![image](https://github.com/user-attachments/assets/5eef6abb-2f9d-4e12-b90a-91c852324645)
+
 
 
 
