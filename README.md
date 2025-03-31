@@ -49,18 +49,22 @@
 ###### 可使用输出的DEG文件自行进行富集分析，如果没出问题那就最好了
 
 ##### GO BP 富集
+
 ![image](https://github.com/user-attachments/assets/a661df4f-8841-4aba-b783-b73e72909eb0)
 
 
 ##### KEGG 富集
+
 ![image](https://github.com/user-attachments/assets/8e1e5d48-f04b-4e57-99ba-59bf48f0e085)
 
 
-##### GSEA富集分析
+##### HALLMARK GSEA 富集
+
 ![image](https://github.com/user-attachments/assets/0f8659c8-a025-4f58-b003-f4ba096fb48c)
 
 
-###### 运行函数会自动新建文件夹存放文件
+##### 运行函数会自动新建文件夹存放文件
+
 ![image](https://github.com/user-attachments/assets/5eef6abb-2f9d-4e12-b90a-91c852324645)
 
 
