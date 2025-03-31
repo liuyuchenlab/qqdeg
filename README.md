@@ -36,25 +36,27 @@
 
 
 ```
-  result <- qqdeg("rlim.xlsx","gene","male-ko","male-wt",fc_threshold = 1.5)
+result <- qqdeg("rlim.xlsx","gene","male-ko","male-wt",fc_threshold = 1.5)
 ```
 
 ###### result中存有大量对象，可自行保存或者修改
 
 ###### 输出一张火山图
-![image](https://github.com/user-attachments/assets/eeb526cb-933f-4b71-afa7-a81a553e9546)
+
+![image](https://github.com/user-attachments/assets/b38d441f-74d5-4db9-a957-9fc71bf9a5af)
+
 
 
 ###### 可使用输出的DEG文件自行进行富集分析
 
 ##### GO BP 富集
 
-![image](https://github.com/user-attachments/assets/a661df4f-8841-4aba-b783-b73e72909eb0)
+![image](https://github.com/user-attachments/assets/7fc97129-3d2c-43ef-97ce-8a33dbc04ab3)
 
 
 ##### KEGG 富集
 
-![image](https://github.com/user-attachments/assets/8e1e5d48-f04b-4e57-99ba-59bf48f0e085)
+![image](https://github.com/user-attachments/assets/3f6d644f-6b57-43df-8509-6e8a89929d53)
 
 
 ##### HALLMARK GSEA 富集
