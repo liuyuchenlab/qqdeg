@@ -59,7 +59,7 @@ result <- qqdeg("rlim.xlsx","gene","male-ko","male-wt",fc_threshold = 1.5)
 ![image](https://github.com/user-attachments/assets/3f6d644f-6b57-43df-8509-6e8a89929d53)
 
 
-##### HALLMARK GSEA 富集
+##### HALLMARK GSEA 打分排序
 
 ![image](https://github.com/user-attachments/assets/0f8659c8-a025-4f58-b003-f4ba096fb48c)
 
