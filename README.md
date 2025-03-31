@@ -45,8 +45,7 @@
 ![image](https://github.com/user-attachments/assets/eeb526cb-933f-4b71-afa7-a81a553e9546)
 
 
-
-###### 可使用输出的DEG文件自行进行富集分析，如果没出问题那就最好了
+###### 可使用输出的DEG文件自行进行富集分析
 
 ##### GO BP 富集
 
