@@ -13,6 +13,7 @@
 #'
 #' @examples
 #' result <- qqdeg("rlim.xlsx","gene","male-ko","male-wt",fc_threshold = 1.5)
+###测试###
 qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
   # 加载必要的包，并抑制启动消息
   suppressPackageStartupMessages({
@@ -29,6 +30,8 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
     library(DOSE)
     library(topGO)
     library(pathview)
+    library(msigdbr)
+
   })
 
   # 创建输出文件夹
@@ -97,7 +100,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
   top_genes <- c(as.character(top_up_genes), as.character(top_down_genes))
   resdata$Lable[match(top_genes, resdata$Row.names)] <- top_genes
 
-  palette <- c("#2f5688", "#BBBBBB", "#CC0000")
+  palette <- c("#293890", "#BBBBBB", "#BF1D2D")
   group_colors <- c("down-regulated" = palette[1], "not significant" = palette[2], "up-regulated" = palette[3])
 
   volcano_plot <- ggplot(resdata, aes(x = log2FoldChange, y = logP)) +
@@ -176,10 +179,10 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
 
       # 绘制GO富集图
       go_plot <- ggplot(go, aes(x = value, y = Description)) +
-        xlab('Enrich value') +
+        xlab('Enrich Value') +
         ylab("") +
-        geom_bar(stat = "identity", aes(fill = ifelse(value < 0, "down", "up"))) +
-        scale_fill_manual(name = "value", values = c("down" = "dodgerblue3", "up" = "firebrick3")) +
+        geom_bar(stat = "identity", aes(fill = ifelse(value < 0, "Down", "Up"))) +
+        scale_fill_manual(name = "", values = c("Down" = "#293890", "Up" = "#BF1D2D")) +
         theme_few() +
         ggtitle(paste(group1, "vs", group2, "GO BP Enrichment Analysis"))
 
@@ -223,10 +226,10 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
       kegg$Description <- factor(kegg$Description, levels = name)
       #绘制富集图
       kegg_plot <- ggplot(kegg, aes(x = value, y = Description),col = col) +
-        xlab('Enrich value') +
+        xlab('Enrich Value') +
         ylab("") +
-        geom_bar(stat = "identity", aes(fill = ifelse(value < 0, "down", "up"))) +
-        scale_fill_manual(name = "value", values = c("down" ="dodgerblue3", "up" = "firebrick3")) +
+        geom_bar(stat = "identity", aes(fill = ifelse(value < 0, "Down", "Up"))) +
+        scale_fill_manual(name = "", values = c("Down" ="#293890", "Up" = "#BF1D2D")) +
         theme_few() +
         ggtitle(paste(group1, "vs", group2, "KEGG Enrichment Analysis"))
       print(kegg_plot)
@@ -235,6 +238,121 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
              height = 6,
              dpi = 600,          # 提高分辨率
              device = cairo_pdf)
+      # 生成prerank文件（不筛选）
+      if (object_type == "gene") {
+        prerank_data <- resdata[, c("Row.names", "log2FoldChange")]
+        prerank_data <- prerank_data[order(prerank_data$log2FoldChange, decreasing = TRUE), ]
+        write.csv(prerank_data,
+                  file.path(output_dir, paste0("prerank_", group1, "_vs_", group2, ".csv")),
+                  row.names = FALSE)
+      }
+
+      # HALLMARK GSEA分析
+      if (object_type == "gene") {
+        # 基因列表构建
+        genelist <- prerank_data$log2FoldChange
+        names(genelist) <- prerank_data$Row.names
+        genelist <- sort(genelist, decreasing = TRUE)
+
+        # 获取小鼠HALLMARK基因集
+        hallmark_gene_sets <- msigdbr(species = "Mus musculus", category = "H")
+        geneset <- data.frame(
+          term = gsub("HALLMARK_", "", hallmark_gene_sets$gs_name),
+          gene = hallmark_gene_sets$gene_symbol
+        )
+
+        # 执行GSEA分析
+        egmt <- GSEA(
+          genelist,
+          TERM2GENE = geneset,
+          pvalueCutoff = 1,
+          minGSSize = 1,
+          maxGSSize = 500000  # 保持原始参数设置
+        )
+
+        # 结果可视化
+        if (nrow(egmt@result) > 0) {
+          data <- egmt@result[, c("ID", "NES", "setSize", "pvalue")]
+          data <- data[order(data$NES, decreasing = TRUE), ]
+          data$ID <- factor(data$ID, levels = data$ID)
+          data$xlab <- 1:nrow(data)
+          # Calculate y-axis limits outside of ggplot chain
+          y_min <- floor(min(data$NES))
+          y_max <- ceiling(max(data$NES))# Select pathways to label - only top and bottom 3 by NES score
+          top_pathways <- head(as.character(data$ID), 3)  # Top 3 pathways with highest NES
+          bottom_pathways <- tail(as.character(data$ID), 3)  # Bottom 3 pathways with lowest NES
+          label <- c(top_pathways, bottom_pathways)
+          data_label <- data[data$ID %in% label, ]
+          data_label$col <- rep(c("#F6631C", "#2C91E0", "#F3A332", "#018A67"), length.out = nrow(data_label))
+          data_label
+          fill_color <- "#6D65A3"
+          # 可视化参数设置
+          top_n <- 6
+          label_data <- rbind(
+            head(data[order(data$NES, decreasing = TRUE), ], top_n/2),
+            tail(data[order(data$NES, decreasing = TRUE), ], top_n/2)
+          )
+
+          # 生成气泡图
+          p_gsea <- ggplot(data, aes(x = xlab, y = NES, color = NES, size = setSize)) +
+            geom_point(aes(alpha = -log10(pvalue)),
+                       shape = 21, stroke = 0.7,
+                       fill = fill_color, colour = "black") +
+            scale_alpha_continuous(range = c(0.1, 0.9), name = "Significance\n(-log10 p-value)") +
+            labs(
+              title = paste(group1, "vs", group2, "Pathway Enrichment Analysis"),
+              x = "Gene Set Rank",
+              y = "Normalized Enrichment Score (NES)",
+              size = "Gene Set Size",
+              color = "NES"
+            ) +
+            theme_classic(base_size = 15) +
+            # Adjust axes
+            scale_x_continuous(breaks = seq(0, 50, by = 10), labels = seq(0, 50, by = 10)) +
+            # Dynamic Y-axis scaling based on pre-calculated limits
+            scale_y_continuous(
+              breaks = seq(y_min, y_max, by = 1),
+              labels = seq(y_min, y_max, by = 1),
+              limits = c(y_min, y_max),
+              expand = c(0.1, 0.1)  # Add a bit of padding
+            ) +
+            # Customize legend
+            guides(
+              size = guide_legend(title = "Gene Set Size", order = 1),
+              alpha = guide_legend(title = "Significance\n(-log10 p-value)", order = 2)
+            ) +
+            # Beautify theme
+            theme(
+              plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+              plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray40"),
+              axis.line = element_line(color = "black", size = 0.6),  # Bold axis lines
+              axis.text = element_text(face = "bold"),               # Bold axis text
+              axis.title = element_text(size = 14, face = "bold"),   # Set axis title
+              legend.title = element_text(face = "bold"),            # Bold legend title
+              legend.position = "right",                             # Place legend on the right
+              legend.box = "vertical",                               # Vertical legend arrangement
+              panel.grid = element_blank(),                          # Remove all grid lines
+              panel.background = element_rect(fill = "white")        # Ensure white background
+            ) +
+            geom_text_repel(data = data_label,
+                            aes(x = xlab, y = NES, label = ID),
+                            size = 3,
+                            color = data_label$col,  # Using the custom colors defined above
+                            force = 20,                # Label repulsion force (increased as in reference)
+                            point.padding = 0.5,       # Minimum distance between labels and points
+                            min.segment.length = 0,    # Minimum guide line length
+                            hjust = 1.2,               # Horizontal alignment (from reference code)
+                            segment.color = "grey20",  # Guide line color
+                            segment.size = 0.3,        # Guide line thickness (as in reference)
+                            segment.alpha = 0.8,       # Guide line transparency
+                            nudge_y = -0.1)
+          print(p_gsea)
+          # 保存结果
+          ggsave(file.path(output_dir,
+                           paste0("HALLMARK_GSEA_", group1, "_vs_", group2, ".pdf")),
+                 plot = p_gsea, width = 8, height = 6, dpi = 600, device = cairo_pdf)
+        }
+      }
     }
   }
 
@@ -243,9 +361,9 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
     volcano_plot = volcano_plot,
     go_plot = if (exists("go_plot")) go_plot else NULL,
     kegg_plot = if (exists("kk_plot")) kegg_plot else NULL,
-    diff_genes = file.path(output_dir, paste0("diff_", object_type, "_", group1, "_vs_", group2, ".csv")),
-    up_genes = file.path(output_dir, paste0(group1, "_vs_", group2, "_up-", object_type, ".csv")),
-    down_genes = file.path(output_dir, paste0(group1, "_vs_", group2, "_down-", object_type, ".csv")),
+    diff_genes = diff_genes,
+    up_genes = up_genes,
+    down_genes = down_genes,
     obj_data = obj_data,
     coldata = coldata,
     res = res,
@@ -255,7 +373,8 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
     go.down = if (exists("go.down")) go.down else NULL,
     kegg = if (exists("kegg")) kegg else NULL,
     kegg.up = if (exists("kegg.up")) kegg.up else NULL,
-    kegg.down = if (exists("kegg.down")) kegg.down else NULL
+    kegg.down = if (exists("kegg.down")) kegg.down else NULL,
+    p_gsea = if (exists("p_gsea")) p_gsea else NULL
   )
   # 打印完毕消息
   # 创建虚线
