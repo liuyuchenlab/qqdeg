@@ -360,7 +360,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
   result <- list(
     volcano_plot = volcano_plot,
     go_plot = if (exists("go_plot")) go_plot else NULL,
-    kegg_plot = if (exists("kk_plot")) kegg_plot else NULL,
+    kegg_plot = if (exists("kegg_plot")) kegg_plot else NULL,
     diff_genes = diff_genes,
     up_genes = up_genes,
     down_genes = down_genes,
