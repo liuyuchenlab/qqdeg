@@ -7,14 +7,14 @@
 #' @param group1 treat group
 #' @param group2 control group
 #' @param fc_threshold foldchange value
-#'
+#' @param species mouse human
 #' @return deg results and enrich results
 #' @export
 #'
 #' @examples
 #' result <- qqdeg("rlim.xlsx","gene","male-ko","male-wt",fc_threshold = 1.5)
 ###测试###
-qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
+qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species = "mouse") {
   # 加载必要的包，并抑制启动消息
   suppressPackageStartupMessages({
     library(DESeq2)
@@ -22,7 +22,6 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
     library(ggpubr)
     library(openxlsx)
     library(clusterProfiler)
-    library(org.Mm.eg.db)
     library(ggthemes)
     library(ggrepel)
     library(gmodels)
@@ -31,8 +30,22 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
     library(topGO)
     library(pathview)
     library(msigdbr)
-
+    if (species == "mouse") {
+      library(org.Mm.eg.db)
+      OrgDb <- org.Mm.eg.db
+      kegg_org <- "mmu"
+      gsea_speice <- "Mus musculus"
+    } else if (species == "human") {
+      library(org.Hs.eg.db)
+      OrgDb <- org.Hs.eg.db
+      kegg_org <- "hsa"
+      gsea_speice <- "Homo sapiens"
+    } else {
+      stop("species 必须是 'mouse' 或 'human'")
+    }
   })
+
+
 
   # 创建输出文件夹
   output_dir <- paste0(group1, "_vs_", group2, "_", object_type)
@@ -137,19 +150,19 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
     down <- read.csv(file.path(output_dir, paste0(group1, "_vs_", group2, "_down-", object_type, ".csv")))
 
     up_genes <- bitr(up$X, fromType = "SYMBOL",
-                     toType = "ENTREZID", OrgDb = org.Mm.eg.db, drop = FALSE)
+                     toType = "ENTREZID", OrgDb = OrgDb, drop = FALSE)
     down_genes <- bitr(down$X, fromType = "SYMBOL",
-                       toType = "ENTREZID", OrgDb = org.Mm.eg.db, drop = FALSE)
+                       toType = "ENTREZID", OrgDb = OrgDb, drop = FALSE)
 
     if (nrow(up_genes) == 0 | nrow(down_genes) == 0) {
       cat("Warning: No genes mapped to ENTREZ IDs. Skipping GO and KEGG analysis.\n")
     } else {
       up.go_all <- enrichGO(gene = up_genes$ENTREZID,
-                            OrgDb = org.Mm.eg.db,
+                            OrgDb = OrgDb,
                             keyType = 'ENTREZID', ont = "BP",
                             pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.05)
       down.go_all <- enrichGO(gene = down_genes$ENTREZID,
-                              OrgDb = org.Mm.eg.db,
+                              OrgDb = OrgDb,
                               keyType = 'ENTREZID', ont = "BP", pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.05)
 
       # 处理GO结果
@@ -194,9 +207,9 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
 
       #######kegg
       #上调kegg
-      up.kk <- enrichKEGG(gene = up_genes$ENTREZID,organism = 'mmu',  pvalueCutoff = 0.05)
+      up.kk <- enrichKEGG(gene = up_genes$ENTREZID,organism =  kegg_org,  pvalueCutoff = 0.05)
       #下调kegg
-      down.kk <- enrichKEGG(gene = down_genes$ENTREZID,organism = 'mmu',  pvalueCutoff = 0.05)
+      down.kk <- enrichKEGG(gene = down_genes$ENTREZID,organism =  kegg_org,  pvalueCutoff = 0.05)
       #画图
       upkegg <- up.kk@result
       up.kegg <- upkegg[order(upkegg$p.adjust),]
@@ -254,8 +267,8 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
         names(genelist) <- prerank_data$Row.names
         genelist <- sort(genelist, decreasing = TRUE)
 
-        # 获取小鼠HALLMARK基因集
-        hallmark_gene_sets <- msigdbr(species = "Mus musculus", category = "H")
+        # 获取HALLMARK基因集
+        hallmark_gene_sets <- msigdbr(species = gsea_speice, category = "H")
         geneset <- data.frame(
           term = gsub("HALLMARK_", "", hallmark_gene_sets$gs_name),
           gene = hallmark_gene_sets$gene_symbol
@@ -387,4 +400,5 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5) {
   return(result)
 
 }
+
 #

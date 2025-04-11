@@ -21,6 +21,7 @@ Imports:
     gmodels,
     matrixStats,
     openxlsx,
+    org.Hs.eg.db,
     org.Mm.eg.db,
     pathview,
     topGO
