@@ -168,12 +168,16 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
       # 处理GO结果
       go.up <- up.go_all@result
       go.up <- go.up[order(go.up$p.adjust), ]
+      write.xlsx(go.up, file = file.path(output_dir, paste0("go_up", "_", group1, "_vs_", group2, ".xlsx")))
       go.up$value <- -log10(go.up$p.adjust)
       go.down <- down.go_all@result
       go.down <- go.down[order(go.down$p.adjust), ]
+      write.xlsx(go.down, file = file.path(output_dir, paste0("go_down", "_", group1, "_vs_", group2, ".xlsx")))
       go.down$new <- -log10(go.down$p.adjust)
       go.down$value <- -(go.down$new)
       go.down <- go.down[ , -which(colnames(go.down) %in% "new")]
+
+
       # 合并显著的上下调
       go.up <- head(go.up, 5)
       go.down <- head(go.down, 5)
@@ -213,11 +217,14 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
       #画图
       upkegg <- up.kk@result
       up.kegg <- upkegg[order(upkegg$p.adjust),]
+      write.xlsx(upkegg, file = file.path(output_dir, paste0("kegg_up", "_", group1, "_vs_", group2, ".xlsx")))
       up.kegg$value <- -log10(up.kegg$p.adjust)
 
       downkegg <- down.kk@result
       down.kegg <- downkegg[order(downkegg$p.adjust),]
+      write.xlsx(downkegg, file = file.path(output_dir, paste0("down_kegg", "_", group1, "_vs_", group2, ".xlsx")))
       down.kegg$value <- log10(down.kegg$p.adjust)
+
 
       ####合并显著的上下调
       kegg.up <-  head(up.kegg,5)
@@ -287,6 +294,8 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
         if (nrow(egmt@result) > 0) {
           data <- egmt@result[, c("ID", "NES", "setSize", "pvalue")]
           data <- data[order(data$NES, decreasing = TRUE), ]
+          write.xlsx(data, file = file.path(output_dir, paste0("gsea", "_", group1, "_vs_", group2, ".xlsx")))
+
           data$ID <- factor(data$ID, levels = data$ID)
           data$xlab <- 1:nrow(data)
           # Calculate y-axis limits outside of ggplot chain
@@ -387,6 +396,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
     kegg = if (exists("kegg")) kegg else NULL,
     kegg.up = if (exists("kegg.up")) kegg.up else NULL,
     kegg.down = if (exists("kegg.down")) kegg.down else NULL,
+    gesa = if (exists("data")) data else NULL,
     p_gsea = if (exists("p_gsea")) p_gsea else NULL
   )
   # 打印完毕消息
