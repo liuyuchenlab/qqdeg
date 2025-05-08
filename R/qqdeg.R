@@ -388,6 +388,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
     down_genes = down_genes,
     obj_data = obj_data,
     coldata = coldata,
+    dds = dds,
     res = res,
     resdata = resdata,
     go = if (exists("go")) go else NULL,
