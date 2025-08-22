@@ -51,8 +51,14 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
   output_dir <- paste0(group1, "_vs_", group2, "_", object_type)
   dir.create(output_dir, showWarnings = FALSE)
 
-  # 读取数据
-  data <- read.xlsx(file, colNames = TRUE, rowNames = FALSE)
+  # 读取数据（自动判断文件类型）
+  file_ext <- tools::file_ext(file)  # 获取文件后缀[1](@ref)
+  data <- switch(file_ext,
+                 "xlsx" = openxlsx::read.xlsx(file, colNames = TRUE, rowNames = FALSE),
+                 "csv" = read.csv(file, header = TRUE, stringsAsFactors = FALSE),
+                 "txt" = read.table(file, header = TRUE, sep = "\t", stringsAsFactors = FALSE),
+                 stop("Unsupported file format. Only .xlsx, .csv and .txt are supported")
+  )
 
   # 根据对象类型提取数据
   if (object_type == "gene") {
@@ -66,13 +72,23 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
   row.names(obj_data) <- obj_data$gene_id
   obj_data <- obj_data[, -1]
 
-  # 准备分组信息
-  coldata <- data.frame(condition = gsub("-\\d+$", "", colnames(obj_data)), row.names = colnames(obj_data))
+  # 提取分组信息（支持多种分隔符：- _ .）
+  coldata <- data.frame(
+    condition = sub("[-_.]\\d+$", "", colnames(obj_data)),  # 移除末尾的数字及分隔符
+    row.names = colnames(obj_data)
+  )
+
   #提取分组矩阵
   target_samples <- rownames(coldata)[coldata$condition %in% c(group1, group2)]
   sub_counts <- obj_data[, target_samples]  # 提取对应样本的表达矩阵
-  # 准备新的分组信息
-  coldata <- data.frame(condition = gsub("-\\d+$", "", colnames(sub_counts)), row.names = colnames(sub_counts))
+
+  # 提取分组信息（支持多种分隔符：- _ .）
+  coldata <- data.frame(
+    condition = sub("[-_.]\\d+$", "", colnames(sub_counts)),  # 移除末尾的数字及分隔符
+    row.names = colnames(sub_counts)
+  )
+  coldata$condition <- as.factor(coldata$condition)
+
   # 创建DESeq2数据集
   dds <- DESeqDataSetFromMatrix(countData = sub_counts, colData = coldata, design = ~condition)
   keep <- rowSums(counts(dds) >= 10) >= 2
@@ -81,6 +97,31 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
   # 标准化和差异表达分析
   dds <- DESeq(dds)
   res <- results(dds, contrast = c("condition", group1, group2))
+
+  #pca
+  #VST标准化
+  all_vsd <- vst(dds)
+
+  #pca美化
+  # 自定义颜色
+  pca_group_colors <- c("#1f77b4",
+                        "#d62728")
+  #美化图片
+  pca <- plotPCA(all_vsd, intgroup = "condition") +
+    geom_point(aes(color = condition), size = 3) +  # 将颜色映射到 condition
+    scale_color_manual(values = pca_group_colors) +  # 应用自定义颜色
+    theme_few() +theme(legend.position = "top") +
+    theme(aspect.ratio = 1)  # 设置纵横比为1:1
+
+  # 显示pca 图
+  print(pca)
+
+  # 保存pca
+  ggsave(filename = file.path(output_dir, paste0("pca_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
+         plot = pca, width = 8,          # 增大画布宽度
+         height = 6,
+         dpi = 600,          # 提高分辨率
+         device = cairo_pdf)
 
   # 保存差异分析结果
   resdata <- merge(as.data.frame(res), as.data.frame(counts(dds, normalized = TRUE)), by = "row.names", sort = FALSE)
@@ -130,7 +171,8 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
     geom_vline(xintercept = c(-log2(fc_threshold), log2(fc_threshold)), linetype = "dashed") +
     expand_limits(y = 0) +
     xlab(bquote(log[2]*FoldChange * "(" ~ .(group1) ~ "/" ~ .(group2) ~ ")")) +
-    ylab(expression(-log[10](Adjusted ~ P-value)))
+    ylab(expression(-log[10](Adjusted ~ P-value))) +
+    theme(aspect.ratio = 1)  # 设置纵横比为1:1
 
   # 显示火山图
   print(volcano_plot)
@@ -201,7 +243,8 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
         geom_bar(stat = "identity", aes(fill = ifelse(value < 0, "Down", "Up"))) +
         scale_fill_manual(name = "", values = c("Down" = "#293890", "Up" = "#BF1D2D")) +
         theme_few() +
-        ggtitle(paste(group1, "vs", group2, "GO BP Enrichment Analysis"))
+        ggtitle(paste(group1, "vs", group2, "GO BP Enrichment Analysis")) +
+        theme(aspect.ratio = 1)  # 设置纵横比为1:1
 
       print(go_plot)
       ggsave(filename = file.path(output_dir, paste0("GO_BP_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = go_plot,width = 8,          # 增大画布宽度
@@ -251,7 +294,9 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
         geom_bar(stat = "identity", aes(fill = ifelse(value < 0, "Down", "Up"))) +
         scale_fill_manual(name = "", values = c("Down" ="#293890", "Up" = "#BF1D2D")) +
         theme_few() +
-        ggtitle(paste(group1, "vs", group2, "KEGG Enrichment Analysis"))
+        ggtitle(paste(group1, "vs", group2, "KEGG Enrichment Analysis")) +
+        theme(aspect.ratio = 1)  # 设置纵横比为1:1
+
       print(kegg_plot)
 
       ggsave(filename = file.path(output_dir, paste0("KEGG_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = kegg_plot,width = 8,          # 增大画布宽度
@@ -367,7 +412,9 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
                             segment.color = "grey20",  # Guide line color
                             segment.size = 0.3,        # Guide line thickness (as in reference)
                             segment.alpha = 0.8,       # Guide line transparency
-                            nudge_y = -0.1)
+                            nudge_y = -0.1) +
+            theme(aspect.ratio = 1)  # 设置纵横比为1:1
+
           print(p_gsea)
           # 保存结果
           ggsave(file.path(output_dir,
@@ -380,6 +427,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
 
   # 将所有结果保存到列表
   result <- list(
+    pca <- pca,
     volcano_plot = volcano_plot,
     go_plot = if (exists("go_plot")) go_plot else NULL,
     kegg_plot = if (exists("kegg_plot")) kegg_plot else NULL,
@@ -388,7 +436,6 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
     down_genes = down_genes,
     obj_data = obj_data,
     coldata = coldata,
-    dds = dds,
     res = res,
     resdata = resdata,
     go = if (exists("go")) go else NULL,
@@ -411,5 +458,4 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
   return(result)
 
 }
-
 #
