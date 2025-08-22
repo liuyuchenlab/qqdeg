@@ -42,7 +42,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
       kegg_org <- "hsa"
       gsea_speice <- "Homo sapiens"
     } else {
-      stop("species 必须是 'mouse' 或 'human'")
+      stop("species Must be 'mouse' or 'human'")
     }
   })
 
