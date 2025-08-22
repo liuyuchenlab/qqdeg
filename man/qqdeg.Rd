@@ -2,9 +2,9 @@
 % Please edit documentation in R/qqdeg.R
 \name{qqdeg}
 \alias{qqdeg}
-\title{qqdeg}
+\title{Title}
 \usage{
-qqdeg(file, object_type, group1, group2, fc_threshold = 1.5)
+qqdeg(file, object_type, group1, group2, fc_threshold = 1.5, species = "mouse")
 }
 \arguments{
 \item{file}{file in document}
@@ -16,13 +16,16 @@ qqdeg(file, object_type, group1, group2, fc_threshold = 1.5)
 \item{group2}{control group}
 
 \item{fc_threshold}{foldchange value}
+
+\item{species}{mouse or human}
 }
 \value{
 deg results and enrich results
 }
 \description{
-qqdeg
+Title
 }
 \examples{
-result <- qqdeg("rlim.xlsx","gene","male-ko","male-wt",fc_threshold = 1.5)
+example_file <- system.file("extdata", "mouse.xlsx", package = "qqdeg")
+result <- qqdeg(example_file, "gene", "male-ko", "male-wt", fc_threshold = 1.5,species = "mouse")
 }
