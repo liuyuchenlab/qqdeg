@@ -29,7 +29,8 @@
 
 ![image](https://github.com/user-attachments/assets/4499d333-b5a1-4bf3-8051-7435f5d0cf97)
 
-###### 第一个是实验组，第二个是对照组，fc是foldchange，默认是1.5
+###### 第一个是实验组（male-ko），第二个是对照组（male-wt），fc是foldchange，默认是1.5
+
 ###### GO和KEGG默认p.adj < 0.05，TOP 5，删除重复项
 
 ```
