@@ -8,8 +8,6 @@ Description: easily get deg.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Suggests: 
-    BiocManager
 Imports: 
     clusterProfiler,
     DESeq2,
@@ -20,6 +18,7 @@ Imports:
     ggthemes,
     gmodels,
     matrixStats,
+    msigdbr,
     openxlsx,
     org.Hs.eg.db,
     org.Mm.eg.db,
