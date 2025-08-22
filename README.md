@@ -20,14 +20,11 @@
 
 ```
 ###### 数据格式只能用xlsx文件
-###### 可以直接承接TECOUNTS的counts矩阵，选择gene或者te即可
+###### 可以直接承接TECOUNTS的counts矩阵，选择gene或者te即可提取相应矩阵
 ###### 其他软件的gene定量选gene即可
-###### 最重要的是数据格式，基因的列名为gene_id，样本名为A-1，A-2，B-1，B-2等等
+###### 最重要的是数据格式，基因的列名必须为gene_id，样本名可以为A-1，A_1，A.1三种形式之一
 
 ![image](https://github.com/user-attachments/assets/4499d333-b5a1-4bf3-8051-7435f5d0cf97)
-
-
-
 
 ###### 示例代码，自己用的，处理小鼠数据，想用其他物种，可以改下代码，非常方便 
 
@@ -36,37 +33,37 @@
 
 
 ```
-result <- qqdeg("rlim.xlsx","gene","male-ko","male-wt",fc_threshold = 1.5,species = "mouse")
+result <- qqdeg("mouse.xlsx","gene","male-ko","male-wt",fc_threshold = 1.5,species = "mouse")
 ```
 
 ###### result中存有大量对象，可自行保存或者修改
 
+### 输出一张主成分分析图
+
+<img width="936" height="515" alt="image" src="https://github.com/user-attachments/assets/4013145c-9145-4961-ba05-9837fcc0bfa6" />
+
 ###### 输出一张火山图
 
-![image](https://github.com/user-attachments/assets/b38d441f-74d5-4db9-a957-9fc71bf9a5af)
-
-
+<img width="936" height="515" alt="image" src="https://github.com/user-attachments/assets/64ae0365-6315-44b7-97f7-0cd1dd0694e8" />
 
 ###### 可使用输出的DEG文件自行进行富集分析
 
 ##### GO BP 富集
 
-![image](https://github.com/user-attachments/assets/7fc97129-3d2c-43ef-97ce-8a33dbc04ab3)
-
+<img width="936" height="515" alt="image" src="https://github.com/user-attachments/assets/54e9ace1-7387-4952-96a2-6f6e9a2402f9" />
 
 ##### KEGG 富集
 
-![image](https://github.com/user-attachments/assets/3f6d644f-6b57-43df-8509-6e8a89929d53)
-
+<img width="936" height="515" alt="image" src="https://github.com/user-attachments/assets/920d42e5-94db-4375-9785-9e58d12f39a0" />
 
 ##### HALLMARK GSEA 打分排序
 
-![image](https://github.com/user-attachments/assets/0f8659c8-a025-4f58-b003-f4ba096fb48c)
-
+<img width="953" height="712" alt="image" src="https://github.com/user-attachments/assets/c2894c34-f89c-453a-8d1f-471551c09045" />
 
 ##### 运行函数会自动新建文件夹存放文件
 
-![image](https://github.com/user-attachments/assets/5eef6abb-2f9d-4e12-b90a-91c852324645)
+<img width="772" height="565" alt="image" src="https://github.com/user-attachments/assets/872ee939-0638-4ca5-9d1a-9730c5d90c3c" />
+
 
 
 
