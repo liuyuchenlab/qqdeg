@@ -7,12 +7,13 @@
 #' @param group1 treat group
 #' @param group2 control group
 #' @param fc_threshold foldchange value
-#' @param species mouse human
+#' @param species mouse or human
 #' @return deg results and enrich results
 #' @export
 #'
 #' @examples
-#' result <- qqdeg("rlim.xlsx","gene","male-ko","male-wt",fc_threshold = 1.5)
+#' example_file <- system.file("extdata", "mouse.xlsx", package = "qqdeg")
+#' result <- qqdeg(example_file, "gene", "male-ko", "male-wt", fc_threshold = 1.5,species = "mouse")
 ###测试###
 qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species = "mouse") {
   # 加载必要的包，并抑制启动消息
