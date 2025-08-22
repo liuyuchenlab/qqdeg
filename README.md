@@ -1,6 +1,6 @@
 # qqdeg！ 
-###### 一键获得DEG和enrich!
-##### 安装
+# 一键获得DEG和enrich!
+## 安装
 
 ```
   install.packages("devtools")
@@ -8,9 +8,9 @@
   library(devtools)  
 ```
 
-###### 如果连接失败：  
-###### 1.尝试修复Hosts配置  
-###### 2.尝试Win+R，输入inetcpl.cpl 直接打开Internet选项。打开后，在高级中勾选使用TLS 1.0、使用TLS 1.1、使用TLS 1.2、使用TLS 1.3。
+# 如果连接失败：  
+## 1.尝试修复Hosts配置  
+## 2.尝试Win+R，输入inetcpl.cpl 直接打开Internet选项。打开后，在高级中勾选使用TLS 1.0、使用TLS 1.1、使用TLS 1.2、使用TLS 1.3。
 
 ```
   devtools::install_github('liuyuchenlab/qqdeg')  
@@ -19,18 +19,18 @@
   library(qqdeg)  
 
 ```
-###### 数据格式只能用xlsx文件
+
+# 示例代码
+###### 处理小鼠数据或者人类数据，想用其他物种，可以改下代码，非常方便 
+###### 数据可以用xlsx | csv | txt文件
 ###### 可以直接承接TECOUNTS的counts矩阵，选择gene或者te即可提取相应矩阵
 ###### 其他软件的gene定量选gene即可
 ###### 最重要的是数据格式，基因的列名必须为gene_id，样本名可以为A-1，A_1，A.1三种形式之一
 
 ![image](https://github.com/user-attachments/assets/4499d333-b5a1-4bf3-8051-7435f5d0cf97)
 
-###### 示例代码，自己用的，处理小鼠数据或者人类数据，想用其他物种，可以改下代码，非常方便 
-
 ###### 第一个是实验组，第二个是对照组，fc是foldchange，默认是1.5
 ###### GO和KEGG默认p.adj < 0.05，TOP 5，删除重复项
-
 
 ```
 result <- qqdeg("mouse.xlsx","gene","male-ko","male-wt",fc_threshold = 1.5,species = "mouse")
