@@ -289,7 +289,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
 
       downkegg <- down.kk_readable@result
       down.kegg <- downkegg[order(downkegg$p.adjust),]
-      write.xlsx(downkegg, file = file.path(output_dir, paste0("down_kegg", "_", group1, "_vs_", group2, ".xlsx")))
+      write.xlsx(downkegg, file = file.path(output_dir, paste0("kegg_down", "_", group1, "_vs_", group2, ".xlsx")))
       down.kegg$value <- log10(down.kegg$p.adjust)
 
 
@@ -484,3 +484,4 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
 
 }
 #
+
