@@ -35,14 +35,14 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
       library(org.Mm.eg.db)
       OrgDb <- org.Mm.eg.db
       kegg_org <- "mmu"
-      gsea_speice <- "Mus musculus"
+      gsea_speice <- "mouse"
     } else if (species == "human") {
       library(org.Hs.eg.db)
       OrgDb <- org.Hs.eg.db
       kegg_org <- "hsa"
-      gsea_speice <- "Homo sapiens"
+      gsea_speice <- "human"
     } else {
-      stop("species Must be 'mouse' or 'human'")
+      stop("species 必须是 'mouse' 或 'human'")
     }
   })
 
@@ -109,9 +109,17 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
                         "#d62728")
   #美化图片
   pca <- plotPCA(all_vsd, intgroup = "condition") +
-    geom_point(aes(color = condition), size = 3) +  # 将颜色映射到 condition
+    geom_point(aes(color = condition), size = 4) +  # 将颜色映射到 condition
     scale_color_manual(values = pca_group_colors) +  # 应用自定义颜色
-    theme_few() +theme(legend.position = "top") +
+    theme_few() +
+    theme(legend.position = "top",
+          # 调整图例标题的文字大小
+          legend.title = element_text(size = 13),
+          # 调整图例项目的文字大小
+          legend.text = element_text(size = 12),
+          # 调整图例符号（小色块或点）的大小
+          legend.key.size = unit(1.2, 'cm')
+    ) +
     theme(aspect.ratio = 1)  # 设置纵横比为1:1
 
   # 显示pca 图
@@ -209,13 +217,21 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
                               keyType = 'ENTREZID', ont = "BP", pAdjustMethod = "BH", pvalueCutoff = 0.05, qvalueCutoff = 0.05)
 
       # 处理GO结果
-      go.up <- up.go_all@result
+      up.go_all_readable <- setReadable(up.go_all,
+                                        OrgDb = OrgDb, # 确保与您enrichGO时使用的OrgDb一致
+                                        keyType = "ENTREZID") # keyType 也需一致
+      down.go_all_readable <- setReadable(down.go_all,
+                                          OrgDb = OrgDb, # 确保与您enrichGO时使用的OrgDb一致
+                                          keyType = "ENTREZID") # keyType 也需一致
+      # 现在提取结果
+      go.up <- up.go_all_readable@result
       go.up <- go.up[order(go.up$p.adjust), ]
       write.xlsx(go.up, file = file.path(output_dir, paste0("go_up", "_", group1, "_vs_", group2, ".xlsx")))
       go.up$value <- -log10(go.up$p.adjust)
-      go.down <- down.go_all@result
+      go.down <- down.go_all_readable@result
       go.down <- go.down[order(go.down$p.adjust), ]
       write.xlsx(go.down, file = file.path(output_dir, paste0("go_down", "_", group1, "_vs_", group2, ".xlsx")))
+      go.up$value <- -log10(go.up$p.adjust)
       go.down$new <- -log10(go.down$p.adjust)
       go.down$value <- -(go.down$new)
       go.down <- go.down[ , -which(colnames(go.down) %in% "new")]
@@ -259,12 +275,19 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
       #下调kegg
       down.kk <- enrichKEGG(gene = down_genes$ENTREZID,organism =  kegg_org,  pvalueCutoff = 0.05)
       #画图
-      upkegg <- up.kk@result
+      up.kk_readable <- setReadable(up.kk,
+                                    OrgDb = OrgDb, # 确保与您enrichGO时使用的OrgDb一致
+                                    keyType = "ENTREZID") # keyType 也需一致
+      down.kk_readable <- setReadable(down.kk,
+                                      OrgDb = OrgDb, # 确保与您enrichGO时使用的OrgDb一致
+                                      keyType = "ENTREZID") # keyType 也需一致
+      #提取数据
+      upkegg <- up.kk_readable@result
       up.kegg <- upkegg[order(upkegg$p.adjust),]
       write.xlsx(upkegg, file = file.path(output_dir, paste0("kegg_up", "_", group1, "_vs_", group2, ".xlsx")))
       up.kegg$value <- -log10(up.kegg$p.adjust)
 
-      downkegg <- down.kk@result
+      downkegg <- down.kk_readable@result
       down.kegg <- downkegg[order(downkegg$p.adjust),]
       write.xlsx(downkegg, file = file.path(output_dir, paste0("down_kegg", "_", group1, "_vs_", group2, ".xlsx")))
       down.kegg$value <- log10(down.kegg$p.adjust)
@@ -338,9 +361,10 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
 
         # 结果可视化
         if (nrow(egmt@result) > 0) {
-          data <- egmt@result[, c("ID", "NES", "setSize", "pvalue")]
+          data <- egmt@result[, c("ID", "NES", "setSize", "pvalue","p.adjust","core_enrichment")]
           data <- data[order(data$NES, decreasing = TRUE), ]
-          write.xlsx(data, file = file.path(output_dir, paste0("gsea", "_", group1, "_vs_", group2, ".xlsx")))
+
+          write.xlsx(data, file = file.path(output_dir, paste0("hallmark_gsea", "_", group1, "_vs_", group2, ".xlsx")))
 
           data$ID <- factor(data$ID, levels = data$ID)
           data$xlab <- 1:nrow(data)
@@ -363,7 +387,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
 
           # 生成气泡图
           p_gsea <- ggplot(data, aes(x = xlab, y = NES, color = NES, size = setSize)) +
-            geom_point(aes(alpha = -log10(pvalue)),
+            geom_point(aes(alpha = -log10(p.adjust)),
                        shape = 21, stroke = 0.7,
                        fill = fill_color, colour = "black") +
             scale_alpha_continuous(range = c(0.1, 0.9), name = "Significance\n(-log10 p-value)") +
@@ -387,7 +411,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
             # Customize legend
             guides(
               size = guide_legend(title = "Gene Set Size", order = 1),
-              alpha = guide_legend(title = "Significance\n(-log10 p-value)", order = 2)
+              alpha = guide_legend(title = "Significance\n(-log10 p.adjust)", order = 2)
             ) +
             # Beautify theme
             theme(
@@ -428,7 +452,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
 
   # 将所有结果保存到列表
   result <- list(
-    pca <- pca,
+    pca = pca,
     volcano_plot = volcano_plot,
     go_plot = if (exists("go_plot")) go_plot else NULL,
     kegg_plot = if (exists("kegg_plot")) kegg_plot else NULL,
