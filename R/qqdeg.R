@@ -56,7 +56,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
   file_ext <- tools::file_ext(file)  # 获取文件后缀[1](@ref)
   data <- switch(file_ext,
                  "xlsx" = openxlsx::read.xlsx(file, colNames = TRUE, rowNames = FALSE),
-                 "csv" = read.csv(file, header = TRUE, stringsAsFactors = FALSE),
+                 "csv" = read.csv(file, header = TRUE, stringsAsFactors = FALSE,check.names=F),
                  "txt" = read.table(file, header = TRUE, sep = "\t", stringsAsFactors = FALSE,check.names=F),
                  stop("Unsupported file format. Only .xlsx, .csv and .txt are supported")
   )
@@ -484,5 +484,6 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
 
 }
 #
+
 
 
