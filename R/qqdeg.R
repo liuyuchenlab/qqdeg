@@ -47,9 +47,15 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
   })
 
 
-
+  # 获取文件名
+  # 提取纯文件名
+  file_name <- basename(file)  # 得到 "a.txt"
+  
+  # 去除扩展名
+  file_name <- sub("\\.[^.]*$", "", file_name)  # 得到 "a"
+  
   # 创建输出文件夹
-  output_dir <- paste0(group1, "_vs_", group2, "_", object_type)
+  output_dir <- paste0(file_name,"_",group1, "_vs_", group2, "_", object_type)
   dir.create(output_dir, showWarnings = FALSE)
 
   # 读取数据（自动判断文件类型）
@@ -484,6 +490,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
 
 }
 #
+
 
 
 
