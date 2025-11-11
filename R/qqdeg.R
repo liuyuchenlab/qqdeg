@@ -216,8 +216,14 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5, species
   kegg_up_plot <- NULL; kegg_down_plot <- NULL
 
   if (object_type == "gene") {
-    up <- read.csv(file.path(output_dir, paste0(group1, "_vs_", group2, "_up-", object_type, ".csv")))
-    down <- read.csv(file.path(output_dir, paste0(group1, "_vs_", group2, "_down-", object_type, ".csv")))
+  # 转换为数据框并保留基因ID（原up_genes的行名是基因ID，转为"X"列，与原逻辑一致）
+  up <- as.data.frame(up_genes)
+  up$X <- rownames(up)  # 将行名（基因ID）转为"X"列，匹配原代码中up$X的用法
+  rownames(up) <- NULL  # 清除行名，避免混淆
+  
+  down <- as.data.frame(down_genes)
+  down$X <- rownames(down)  # 同理处理下调基因
+  rownames(down) <- NULL
 
     ###########################################
     # 11.1 基因ID映射
@@ -609,5 +615,6 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5, species
   return(result)
 }
 #
+
 
 
