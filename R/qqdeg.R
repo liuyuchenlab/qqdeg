@@ -106,15 +106,36 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
   res <- results(dds, contrast = c("condition", group1, group2))
 
   #pca
-  #VST标准化
-  all_vsd <- vst(dds)
+  # 1. 计算基因数量（dds的行数）
+n_genes <- nrow(dds)
+cat("检测到的基因数量：", n_genes, "\n")
+
+# 2. 设置阈值（通常2000，可根据实际情况调整）
+threshold <- 2000
+
+# 3. 根据基因数量自动选择标准化方法
+if (n_genes >= threshold) {
+  # 基因数量充足，优先用vst（计算更快，适合大基因集）
+  tryCatch({
+    all_norm <- vst(dds)
+    cat("使用VST标准化（基因数量充足）\n")
+  }, error = function(e) {
+    # 若vst出错，自动 fallback 到rld
+    cat("VST标准化失败，切换到RLD标准化\n")
+    all_norm <- rld(dds)
+  })
+} else {
+  # 基因数量较少（如你的1400个），用rld更稳定
+  cat("基因数量较少（<2000），使用RLD标准化\n")
+  all_norm <- rld(dds)
+}
 
   #pca美化
   # 自定义颜色
   pca_group_colors <- c("#1f77b4",
                         "#d62728")
   #美化图片
-  pca <- plotPCA(all_vsd, intgroup = "condition") +
+  pca <- plotPCA(all_norm, intgroup = "condition") +
     geom_point(aes(color = condition), size = 4) +  # 将颜色映射到 condition
     scale_color_manual(values = pca_group_colors) +  # 应用自定义颜色
     theme_few() +
@@ -490,6 +511,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
 
 }
 #
+
 
 
 
