@@ -153,7 +153,7 @@ if (n_genes >= threshold) {
   print(pca)
 
   # 保存pca
-  ggsave(filename = file.path(output_dir, paste0("pca_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
+  ggplot2::ggsave(filename = file.path(output_dir, paste0("pca_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
          plot = pca, width = 8,          # 增大画布宽度
          height = 6,
          dpi = 600,          # 提高分辨率
@@ -214,7 +214,7 @@ if (n_genes >= threshold) {
   print(volcano_plot)
 
   # 保存火山图
-  ggsave(filename = file.path(output_dir, paste0("Volcano_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
+  ggplot2::ggsave(filename = file.path(output_dir, paste0("Volcano_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
          plot = volcano_plot, width = 8,          # 增大画布宽度
          height = 6,
          dpi = 600,          # 提高分辨率
@@ -291,7 +291,7 @@ if (n_genes >= threshold) {
         theme(aspect.ratio = 1)  # 设置纵横比为1:1
 
       print(go_plot)
-      ggsave(filename = file.path(output_dir, paste0("GO_BP_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = go_plot,width = 8,          # 增大画布宽度
+      ggplot2::ggsave(filename = file.path(output_dir, paste0("GO_BP_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = go_plot,width = 8,          # 增大画布宽度
              height = 6,
              dpi = 600,          # 提高分辨率
              device = cairo_pdf)
@@ -350,7 +350,7 @@ if (n_genes >= threshold) {
 
       print(kegg_plot)
 
-      ggsave(filename = file.path(output_dir, paste0("KEGG_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = kegg_plot,width = 8,          # 增大画布宽度
+      ggplot2::ggsave(filename = file.path(output_dir, paste0("KEGG_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = kegg_plot,width = 8,          # 增大画布宽度
              height = 6,
              dpi = 600,          # 提高分辨率
              device = cairo_pdf)
@@ -469,7 +469,7 @@ if (n_genes >= threshold) {
 
           print(p_gsea)
           # 保存结果
-          ggsave(file.path(output_dir,
+          ggplot2::ggsave(file.path(output_dir,
                            paste0("HALLMARK_GSEA_", group1, "_vs_", group2, ".pdf")),
                  plot = p_gsea, width = 8, height = 6, dpi = 600, device = cairo_pdf)
         }
@@ -511,6 +511,7 @@ if (n_genes >= threshold) {
 
 }
 #
+
 
 
 
