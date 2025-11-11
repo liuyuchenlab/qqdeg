@@ -216,12 +216,11 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5, species
   kegg_up_plot <- NULL; kegg_down_plot <- NULL
 
   if (object_type == "gene") {
-  # 转换为数据框并保留基因ID（原up_genes的行名是基因ID，转为"X"列，与原逻辑一致）
+    # 转换为数据框并保留基因ID（原up_genes的行名是基因ID，转为"X"列，与原逻辑一致）
     up <- as.data.frame(up_genes)
-    up$X <- rownames(up) 
+    up$X <- rownames(up)
     down <- as.data.frame(down_genes)
     down$X <- rownames(down)
-
     ###########################################
     # 11.1 基因ID映射
     ###########################################
@@ -612,7 +611,5 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5, species
   return(result)
 }
 #
-
-
 
 
