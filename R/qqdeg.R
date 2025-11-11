@@ -46,14 +46,13 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
     }
   })
 
-
   # 获取文件名
   # 提取纯文件名
   file_name <- basename(file)  # 得到 "a.txt"
-  
+
   # 去除扩展名
   file_name <- sub("\\.[^.]*$", "", file_name)  # 得到 "a"
-  
+
   # 创建输出文件夹
   output_dir <- paste0(file_name,"_",group1, "_vs_", group2, "_", object_type)
   dir.create(output_dir, showWarnings = FALSE)
@@ -104,32 +103,30 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
   # 标准化和差异表达分析
   dds <- DESeq(dds)
   res <- results(dds, contrast = c("condition", group1, group2))
-
-  #pca
   # 1. 计算基因数量（dds的行数）
-n_genes <- nrow(dds)
-cat("检测到的基因数量：", n_genes, "\n")
+  n_genes <- nrow(dds)
+  cat("检测到的基因数量：", n_genes, "\n")
 
-# 2. 设置阈值（通常2000，可根据实际情况调整）
-threshold <- 2000
+  # 2. 设置阈值（通常2000，可根据实际情况调整）
+  threshold <- 2000
 
-# 3. 根据基因数量自动选择标准化方法
-if (n_genes >= threshold) {
-  # 基因数量充足，优先用vst（计算更快，适合大基因集）
-  tryCatch({
-    all_norm <- vst(dds)
-    cat("使用VST标准化（基因数量充足）\n")
-  }, error = function(e) {
-    # 若vst出错，自动 fallback 到rld
-    cat("VST标准化失败，切换到RLD标准化\n")
-    all_norm <- rld(dds)
-  })
-} else {
-  # 基因数量较少（如你的1400个），用rld更稳定
-  cat("基因数量较少（<2000），使用RLD标准化\n")
-  all_norm <- rlog(dds)
-}
-
+  # 3. 根据基因数量自动选择标准化方法
+  if (n_genes >= threshold) {
+    # 基因数量充足，优先用vst（计算更快，适合大基因集）
+    tryCatch({
+      all_norm <- vst(dds)
+      cat("使用VST标准化（基因数量充足）\n")
+    }, error = function(e) {
+      # 若vst出错，自动 fallback 到rld
+      cat("VST标准化失败，切换到RLD标准化\n")
+      all_norm <- rld(dds)
+    })
+  } else {
+    # 基因数量较少（如你的1400个），用rld更稳定
+    cat("基因数量较少（<2000），使用RLD标准化\n")
+    all_norm <- rlog(dds)
+  }
+  #pca
   #pca美化
   # 自定义颜色
   pca_group_colors <- c("#1f77b4",
@@ -153,7 +150,7 @@ if (n_genes >= threshold) {
   print(pca)
 
   # 保存pca
-  ggplot2::ggsave(filename = file.path(output_dir, paste0("pca_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
+  ggsave(filename = file.path(output_dir, paste0("pca_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
          plot = pca, width = 8,          # 增大画布宽度
          height = 6,
          dpi = 600,          # 提高分辨率
@@ -214,7 +211,7 @@ if (n_genes >= threshold) {
   print(volcano_plot)
 
   # 保存火山图
-  ggplot2::ggsave(filename = file.path(output_dir, paste0("Volcano_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
+  ggsave(filename = file.path(output_dir, paste0("Volcano_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
          plot = volcano_plot, width = 8,          # 增大画布宽度
          height = 6,
          dpi = 600,          # 提高分辨率
@@ -291,7 +288,7 @@ if (n_genes >= threshold) {
         theme(aspect.ratio = 1)  # 设置纵横比为1:1
 
       print(go_plot)
-      ggplot2::ggsave(filename = file.path(output_dir, paste0("GO_BP_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = go_plot,width = 8,          # 增大画布宽度
+      ggsave(filename = file.path(output_dir, paste0("GO_BP_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = go_plot,width = 8,          # 增大画布宽度
              height = 6,
              dpi = 600,          # 提高分辨率
              device = cairo_pdf)
@@ -350,7 +347,7 @@ if (n_genes >= threshold) {
 
       print(kegg_plot)
 
-      ggplot2::ggsave(filename = file.path(output_dir, paste0("KEGG_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = kegg_plot,width = 8,          # 增大画布宽度
+      ggsave(filename = file.path(output_dir, paste0("KEGG_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = kegg_plot,width = 8,          # 增大画布宽度
              height = 6,
              dpi = 600,          # 提高分辨率
              device = cairo_pdf)
@@ -469,7 +466,7 @@ if (n_genes >= threshold) {
 
           print(p_gsea)
           # 保存结果
-          ggplot2::ggsave(file.path(output_dir,
+          ggsave(file.path(output_dir,
                            paste0("HALLMARK_GSEA_", group1, "_vs_", group2, ".pdf")),
                  plot = p_gsea, width = 8, height = 6, dpi = 600, device = cairo_pdf)
         }
@@ -511,10 +508,5 @@ if (n_genes >= threshold) {
 
 }
 #
-
-
-
-
-
 
 
