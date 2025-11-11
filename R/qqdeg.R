@@ -127,7 +127,7 @@ if (n_genes >= threshold) {
 } else {
   # 基因数量较少（如你的1400个），用rld更稳定
   cat("基因数量较少（<2000），使用RLD标准化\n")
-  all_norm <- rld(dds)
+  all_norm <- rlog(dds)
 }
 
   #pca美化
@@ -511,6 +511,7 @@ if (n_genes >= threshold) {
 
 }
 #
+
 
 
 
