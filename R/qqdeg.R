@@ -153,7 +153,8 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
   ggsave(filename = file.path(output_dir, paste0("pca_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
          plot = pca, width = 8,          # 增大画布宽度
          height = 6,
-         dpi = 600,          # 提高分辨率
+         dpi = 600,
+         units = "in" ,
          device = cairo_pdf)
 
   # 保存差异分析结果
@@ -214,7 +215,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
   ggsave(filename = file.path(output_dir, paste0("Volcano_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
          plot = volcano_plot, width = 8,          # 增大画布宽度
          height = 6,
-         dpi = 600,          # 提高分辨率
+         dpi = 600,units = "in" ,
          device = cairo_pdf)
 
   # GO富集分析
@@ -290,7 +291,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
       print(go_plot)
       ggsave(filename = file.path(output_dir, paste0("GO_BP_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = go_plot,width = 8,          # 增大画布宽度
              height = 6,
-             dpi = 600,          # 提高分辨率
+             dpi = 600,units = "in" ,
              device = cairo_pdf)
 
       #######kegg
@@ -349,7 +350,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
 
       ggsave(filename = file.path(output_dir, paste0("KEGG_Enrichment_", object_type, "_", group1, "_vs_", group2, ".pdf")), plot = kegg_plot,width = 8,          # 增大画布宽度
              height = 6,
-             dpi = 600,          # 提高分辨率
+             dpi = 600,units = "in" ,
              device = cairo_pdf)
       # 生成prerank文件（不筛选）
       if (object_type == "gene") {
@@ -468,7 +469,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
           # 保存结果
           ggsave(file.path(output_dir,
                            paste0("HALLMARK_GSEA_", group1, "_vs_", group2, ".pdf")),
-                 plot = p_gsea, width = 8, height = 6, dpi = 600, device = cairo_pdf)
+                 plot = p_gsea, width = 8, height = 6, dpi = 600,units = "in" , device = cairo_pdf)
         }
       }
     }
@@ -508,5 +509,6 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5,species 
 
 }
 #
+
 
 
