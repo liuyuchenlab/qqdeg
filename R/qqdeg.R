@@ -514,7 +514,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5, species
         names(genelist) <- prerank_data$Row.names
         genelist <- sort(genelist, decreasing = TRUE)
 
-        hallmark_gene_sets <- msigdbr(species = gsea_speice, category = "H")
+        hallmark_gene_sets <- msigdbr(species = gsea_speice, collection = "H")
         geneset <- data.frame(
           term = gsub("HALLMARK_", "", hallmark_gene_sets$gs_name),
           gene = hallmark_gene_sets$gene_symbol
@@ -611,5 +611,6 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5, species
   return(result)
 }
 #
+
 
 
