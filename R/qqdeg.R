@@ -128,11 +128,10 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5, species
   # 8. 绘制PCA图
   ###########################################
   pca <- plotPCA(all_norm, intgroup = "condition") +
-    geom_point(aes(color = condition), size = 4) +
-    scale_color_manual(values = c("#1f77b4", "#d62728")) +
-    theme_few() +
-    theme(legend.position = "top") +
-    theme(aspect.ratio = 1)
+  geom_point(aes(color = condition), size = 4) +
+  scale_color_manual(values = c(DMSO = "#1f77b4", PLAB = "#d62728")) +  # 仅两个颜色，对应两个分组
+  theme_few() +
+  theme(legend.position = "top", aspect.ratio = 1)
   print(pca)
   ggsave(
     file.path(output_dir, paste0("pca_plot_", object_type, "_", group1, "_vs_", group2, ".pdf")),
@@ -611,6 +610,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5, species
   return(result)
 }
 #
+
 
 
 
