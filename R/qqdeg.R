@@ -122,28 +122,22 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5, species
   # 7. 数据标准化（PCA用）
   ###########################################
   threshold <- 2000
+  all_norm <- NULL  # 先在外面定义！！这是关键！！
+
 if (nrow(dds) >= threshold) {
   tryCatch({
     all_norm <- vst(dds)
     cat("使用VST标准化\n")
   }, error = function(e) {
-    cat("VST失败，尝试rlog\n")
-    tryCatch({
-      all_norm <- rlog(dds)
-    }, error = function(e2) {
-      cat("rlog也失败，使用标准化counts\n")
-      all_norm <- counts(dds, normalized = TRUE)
-    })
+    cat("VST失败，切换到rlog\n")
+    # 这里会赋值给外面已经定义好的 all_norm
+    assign("all_norm", rlog(dds), inherits = TRUE)
   })
 } else {
   cat("使用rLog标准化\n")
-  tryCatch({
-    all_norm <- rlog(dds)
-  }, error = function(e) {
-    cat("rlog失败，使用标准化counts\n")
-    all_norm <- counts(dds, normalized = TRUE)
-  })
+  all_norm <- rlog(dds)
 }
+
 
   ###########################################
   # 8. 绘制PCA图
