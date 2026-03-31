@@ -145,7 +145,7 @@ if (nrow(dds) >= threshold) {
   scale_color_manual(
     values = c(
       setNames(c("#1f77b4", "#d62728"), c(group1, group2))  # 👈 这行是关键！
-    )
+    ))
   theme_few() +
   theme(legend.position = "top", aspect.ratio = 1)
   print(pca)
