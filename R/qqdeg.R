@@ -102,16 +102,14 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5, species
     design = ~condition
   )
   # ===================== 核心修改：可开关的过滤 =====================
-  if(filter){
-    # 开启过滤：默认至少 min_count 计数，在 min_samples 个样本中
-    keep <- rowSums(counts(dds) >= min_count) >= min_samples
-    cat("开启低表达过滤：保留至少", min_samples, "个样本表达量 >=", min_count, "的特征\n")
-  }else{
-    # 不过滤：保留所有基因
-    keep <- TRUE
-    cat("关闭低表达过滤：保留所有输入基因/TE\n")
-  }
-  dds <- dds[keep, ]
+ # 低表达过滤开关（修复版！！）
+if(filter){
+  keep <- rowSums(counts(dds) >= min_count) >= min_samples
+  cat("开启低表达过滤：保留至少", min_samples, "个样本表达量 >=", min_count, "的特征\n")
+}else{
+  keep <- rep(TRUE, nrow(dds))  # 👈 关键修复！长度匹配！
+  cat("关闭低表达过滤：保留所有输入基因/TE\n")
+}
   # ================================================================
   dds <- dds[keep, ]
   dds <- DESeq(dds)
