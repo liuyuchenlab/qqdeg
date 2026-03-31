@@ -128,7 +128,7 @@ qqdeg <- function(file, object_type, group1, group2, fc_threshold = 1.5, species
       cat("使用VST标准化\n")
     }, error = function(e) {
       cat("VST失败，切换到RLOG\n")
-      all_norm <- rld(dds)
+      all_norm <- rlog(dds)
     })
   } else {
     cat("使用RLog标准化\n")
