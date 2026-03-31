@@ -142,7 +142,7 @@ if (nrow(dds) >= threshold) {
   ###########################################
   pca <- plotPCA(all_norm, intgroup = "condition") +
   geom_point(aes(color = condition), size = 4) +
-  scale_color_manual(values = c(DMSO = "#1f77b4", PLAB = "#d62728")) +  # 仅两个颜色，对应两个分组
+  scale_color_manual(values = c(group1 = "#1f77b4", group2 = "#d62728")) +  # 仅两个颜色，对应两个分组
   theme_few() +
   theme(legend.position = "top", aspect.ratio = 1)
   print(pca)
