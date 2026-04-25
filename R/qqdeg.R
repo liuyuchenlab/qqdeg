@@ -167,9 +167,9 @@ if (nrow(dds) >= threshold) {
     file.path(output_dir, paste0(object_type, "_", group1, "_vs_", group2, ".xlsx"))
   )
 
-  diff_genes <- subset(res, padj < 0.05 & (log2FoldChange > log2(fc_threshold) | log2FoldChange < -log2(fc_threshold)))
-  up_genes <- subset(res, padj < 0.05 & log2FoldChange > log2(fc_threshold))
-  down_genes <- subset(res, padj < 0.05 & log2FoldChange < -log2(fc_threshold))
+  diff_genes <- subset(res, padj < 0.05 & (log2FoldChange >= log2(fc_threshold) | log2FoldChange <= -log2(fc_threshold)))
+  up_genes <- subset(res, padj < 0.05 & log2FoldChange >= log2(fc_threshold))
+  down_genes <- subset(res, padj < 0.05 & log2FoldChange <= -log2(fc_threshold))
 
   write.csv(diff_genes, file.path(output_dir, paste0("diff_", object_type, "_", group1, "_vs_", group2, ".csv")))
   write.csv(up_genes, file.path(output_dir, paste0(group1, "_vs_", group2, "_up-", object_type, ".csv")))
@@ -180,8 +180,8 @@ if (nrow(dds) >= threshold) {
   ###########################################
   resdata$logP <- -log10(resdata$padj)
   resdata$GROUP <- "not significant"
-  resdata$GROUP[(resdata$padj < 0.05) & (resdata$log2FoldChange > log2(fc_threshold))] <- "up-regulated"
-  resdata$GROUP[(resdata$padj < 0.05) & (resdata$log2FoldChange < -log2(fc_threshold))] <- "down-regulated"
+  resdata$GROUP[(resdata$padj < 0.05) & (resdata$log2FoldChange >= log2(fc_threshold))] <- "up-regulated"
+  resdata$GROUP[(resdata$padj < 0.05) & (resdata$log2FoldChange <= -log2(fc_threshold))] <- "down-regulated"
   resdata$Lable <- ""
 
   up_count <- sum(resdata$GROUP == "up-regulated")
