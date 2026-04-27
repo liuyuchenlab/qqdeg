@@ -370,6 +370,7 @@ if (nrow(dds) >= threshold) {
         # 排序并绘图
         go <- go[order(go$value), ]
         go$Description <- factor(go$Description, levels = go$Description)
+        write.xlsx(go, file.path(output_dir, paste0("go_combined", "_", group1, "_vs_", group2, ".xlsx")))
         go_plot <- ggplot(go, aes(x = value, y = Description, fill = ifelse(value < 0, "Down", "Up"))) +
           xlab('Enrich Value') + ylab("") +
           geom_bar(stat = "identity") +
@@ -500,6 +501,7 @@ if (nrow(dds) >= threshold) {
         # 排序并绘图
         kegg <- kegg[order(kegg$value), ]
         kegg$Description <- factor(kegg$Description, levels = kegg$Description)
+        write.xlsx(kegg, file.path(output_dir, paste0("kegg_combined", "_", group1, "_vs_", group2, ".xlsx")))
         kegg_plot <- ggplot(kegg, aes(x = value, y = Description, fill = ifelse(value < 0, "Down", "Up"))) +
           xlab('Enrich Value') + ylab("") +
           geom_bar(stat = "identity") +
